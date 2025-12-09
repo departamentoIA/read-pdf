@@ -6,10 +6,11 @@ Author:         Antonio Arteaga
 Last Updated:   2025-12-08
 Version:        1.0
 Description:
-Text is obtained from a PDF file by using the pdf2image (with poppler) and easyocr libraries.
 The PDF file contains flat text and tables, all pages will be converted to images.
-A part of the imagen is cut depending on the coordinates of two text conditions.
-Some columns are saved in "output_path".
+Text is obtained using the pdf2image (with poppler) to convert the pages to images,
+easyocr is used to obtain the coordinates of the bounding box of a condition text,
+finally, tesseract_ocr is used to read text in the cropped image.
+Data of some columns is saved in "output_path".
 Dependencies:   pdf2image==1.17.0, easyocr==1.7.2, pillow==12.0.0, numpy==2.2.6,
 poppler-25.07.0 installed.
 """
@@ -17,7 +18,6 @@ poppler-25.07.0 installed.
 from pdf2image import convert_from_path
 import easyocr
 import numpy as np
-import matplotlib.pyplot as plt
 import cv2
 
 pdf_path = "./data/raw/3. 2024-38-91E-85.pdf"
@@ -34,11 +34,13 @@ reader = easyocr.Reader(['es', 'en'])
 
 
 def save_text(cropped: np.array) -> None:
-    text = reader.readtext(cropped)
+    results = reader.readtext(cropped)
     # Save the file
-    for linea in text:
-        f.write(linea + "\n")
-        print(linea)
+    print("I read:")
+    # Show text found with confidence
+    for (bbox, text, prob) in results:
+        print(f"Text: {text} (confidence: {prob:.1f})")
+        f.write(text + "\n")
 
 
 def text_from_image(img_np: np.array, text_condition1: str, text_condition2: str) -> None:
@@ -50,30 +52,41 @@ def text_from_image(img_np: np.array, text_condition1: str, text_condition2: str
     # Search for text condition
     for (bbox, text, prob) in results:
         if text.strip() == text_condition1:
-            print(f"Text: {text} (confidence: {prob:.1f})")
+            print(f"Text condition: {text} (confidence: {prob:.1f})")
             boxes_found_1.append(bbox)
         if text.__contains__(text_condition2):
-            print(f"Text: {text} (confidence: {prob:.1f})")
+            print(f"Text condition: {text} (confidence: {prob:.1f})")
             boxes_found_2.append(bbox)
+
+    if (not boxes_found_1) or (not boxes_found_2):
+        print(f"No condition text found in this page.")
+        return
 
     try:
         x1 = int(boxes_found_1[0][0][0]) - dx
         y1 = int(boxes_found_1[0][0][1])
         x2 = int(boxes_found_2[0][0][0])
-        y2 = int(boxes_found_2[0][0][1])
+        if x1 < 0 or x2 <= x1:
+            print("ERROR: invelid coordinates.")
+            return
+        # Crop image
         cropped = img_np[y1:, x1:x2]
-        plt.figure(figsize=(8, 10))
-        plt.imshow(cv2.cvtColor(cropped, cv2.COLOR_BGR2RGB))
-        plt.axis('off')
-        plt.show()
+        if cropped is None or cropped.size == 0:
+            print("ERROR: cropped image empty.")
+            return
+        # cropped = cv2.resize(cropped, None, fx=2, fy=2,
+        # interpolation=cv2.INTER_LINEAR)
+        cv2.imshow("Cropped Image", cropped)
+        cv2.waitKey(0)
+        cv2.destroyWindow("Cropped Image")
         save_text(cropped)
-    except:
+    except Exception as e:
+        print("ERROR en recorte:", e)
         return
 
 
 def main():
-    '''All pages will be converted to images and
-    these images will be cropped according to two text conditions.'''
+    '''Convert PDF to images and crop according to two text conditions.'''
     # Convert PDF to images (for Windows)
     imagenes_pil = convert_from_path(
         pdf_path, dpi=300, poppler_path=r"C:\poppler\Library\bin")
