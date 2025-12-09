@@ -33,21 +33,17 @@ f = open(output_path, "w", encoding="utf-8")
 reader = easyocr.Reader(['es', 'en'])
 
 
-def save_text(cropped: np.array) -> None:
-    '''Save the text in the cropped image.'''
-    results = reader.readtext(cropped)
+def save_text_from_img(img: np.array) -> None:
+    '''Save the text read in the image.'''
+    results = reader.readtext(img)
     for (bbox, text, prob) in results:
         f.write(text + "\n")
 
 
-def display_img(cropped: np.array) -> None:
-    cv2.imshow("Cropped Image", cropped)
-    cv2.waitKey(0)
-    try:
-        cv2.destroyWindow("Cropped Image")
-    except Exception as e:
-        # print("ERROR en ventana:", e)
-        return
+def display_img(window_name: str, img: np.array) -> None:
+    cv2.imshow(window_name, img)
+    cv2.waitKey(5000)
+    cv2.destroyAllWindows()
 
 
 def text_from_image(img_np: np.array, text_condition1: str, text_condition2: str) -> None:
@@ -81,9 +77,10 @@ def text_from_image(img_np: np.array, text_condition1: str, text_condition2: str
         if cropped is None or cropped.size == 0:
             print("ERROR: cropped image empty.")
             return
-        # cropped = cv2.resize(cropped, None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)
-        display_img(cropped)
-        save_text(cropped)
+        cropped = cv2.resize(cropped, None, fx=0.8, fy=0.8,
+                             interpolation=cv2.INTER_LINEAR)
+        display_img("Cropped Image", cropped)
+        save_text_from_img(cropped)
     except Exception as e:
         # print("ERROR en recorte: ", e)
         return
