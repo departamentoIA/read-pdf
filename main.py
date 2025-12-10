@@ -22,24 +22,41 @@ import cv2
 from typing import Tuple, List
 
 # Global variables-----------------------
-pdf_path = "./data/raw/18. 2024-38-90C-536.pdf"
-output_path = "./data/processed/text.txt"
+pdf_path = "./data/raw/9. 2024-38-91E-388.pdf"
+output_path1 = "./data/processed/text1.txt"
 output_path2 = "./data/processed/text2.txt"
+output_path3 = "./data/processed/text3.txt"
+output_path4 = "./data/processed/text4.txt"
 text_condition1 = 'OG'      # Text to search for in the image
 text_condition2 = 'TFE'
+text_condition3 = 'AMPLIACIÓN'
+text_condition4 = 'REDUCCIÓN'
 dx = 10
 column1, column2, column3, column4 = [], [], [], []
 # ---------------------------------------
 # File to write some text
-f1 = open(output_path, "w", encoding="utf-8")
+f1 = open(output_path1, "w", encoding="utf-8")
 f2 = open(output_path2, "w", encoding="utf-8")
+f3 = open(output_path3, "w", encoding="utf-8")
+f4 = open(output_path4, "w", encoding="utf-8")
 
 # Create OCR reader
 reader = easyocr.Reader(['es', 'en'])
 
 
+def text_from_img_raw(file, img: np.array) -> list:
+    '''Save the text read in the image and return text.'''
+    column_list = []
+    results = reader.readtext(img)
+    for (bbox, text, prob) in results:
+        if text != '':
+            file.write(text + "\n")
+            column_list.append(text)
+    return column_list
+
+
 def save_text_from_img(file, img: np.array) -> list:
-    '''Save the text read in the image.'''
+    '''Save the text read in the image and return the cleaned text.'''
     column_list = []
     results = reader.readtext(img)
     for (bbox, text, prob) in results:
@@ -70,7 +87,8 @@ def crop_img(img_np: np.array, x1: int, y1: int, x2: int) -> np.array:
 
 def text_from_column1(results: list, img_np: np.array, text_condition1: str, text_condition2: str) -> Tuple[bool, List[str]]:
     '''Obtain the coordinates of 2 bounding boxes of 2 text conditions.
-    Display the cropped image and write in a file.'''
+    Display the cropped image and write in a file, obtain the content in column 1.
+    A flag is also returned to especify that no text condition1 found.'''
     boxes_found_1, boxes_found_2 = [], []
     # Search for text conditions
     for (bbox, text, prob) in results:
@@ -102,7 +120,8 @@ def text_from_column1(results: list, img_np: np.array, text_condition1: str, tex
 
 def text_from_column2(results: list, img_np: np.array, text_condition2: str) -> list:
     '''Obtain the coordinates of 1 bounding box.
-    Display the cropped image and write in a file.'''
+    Display the cropped image and write in a file,
+    finally, obtain the content in column 2.'''
     boxes_found_2 = []
     # Search for text conditions
     for (bbox, text, prob) in results:
@@ -122,8 +141,65 @@ def text_from_column2(results: list, img_np: np.array, text_condition2: str) -> 
             print("ERROR: invalid coordinates for column 2.")
             return
         cropped = crop_img(img_np, x1, y1, x2)
-        column2_list = save_text_from_img(f2, cropped)
-        return column2_list
+        return save_text_from_img(f2, cropped)
+    except Exception as e:
+        # print("ERROR en recorte: ", e)
+        return
+
+
+def text_from_column3(results: list, img_np: np.array, text_condition3: str) -> list:
+    '''Obtain the coordinates of 1 bounding box.
+    Display the cropped image and write in a file,
+    finally, obtain the content in column 3.'''
+    boxes_found_3 = []
+    # Search for text conditions
+    for (bbox, text, prob) in results:
+        if text.__contains__(text_condition3):
+            print(f"Text condition 3: {text} (confidence: {prob:.1f})")
+            boxes_found_3.append(bbox)
+
+    if not boxes_found_3:
+        print(f"No text condition found in this page for column 3.")
+        return
+
+    try:
+        x1 = int(boxes_found_3[0][0][0])
+        y1 = int(boxes_found_3[0][0][1])
+        x2 = int(boxes_found_3[0][1][0]) + 2*dx
+        if x1 < 0 or x2 <= x1:
+            print("ERROR: invalid coordinates for column 3.")
+            return
+        cropped = crop_img(img_np, x1, y1, x2)
+        return text_from_img_raw(f3, cropped)
+    except Exception as e:
+        # print("ERROR en recorte: ", e)
+        return
+
+
+def text_from_column4(results: list, img_np: np.array, text_condition4: str) -> list:
+    '''Obtain the coordinates of 1 bounding box.
+    Display the cropped image and write in a file,
+    finally, obtain the content in column 4.'''
+    boxes_found_4 = []
+    # Search for text conditions
+    for (bbox, text, prob) in results:
+        if text.__contains__(text_condition4):
+            print(f"Text condition 4: {text} (confidence: {prob:.1f})")
+            boxes_found_4.append(bbox)
+
+    if not boxes_found_4:
+        print(f"No text condition found in this page for column 4.")
+        return
+
+    try:
+        x1 = int(boxes_found_4[0][0][0])
+        y1 = int(boxes_found_4[0][0][1])
+        x2 = int(boxes_found_4[0][1][0]) + 2*dx
+        if x1 < 0 or x2 <= x1:
+            print("ERROR: invalid coordinates for column 4.")
+            return
+        cropped = crop_img(img_np, x1, y1, x2)
+        return text_from_img_raw(f4, cropped)
     except Exception as e:
         # print("ERROR en recorte: ", e)
         return
@@ -152,9 +228,13 @@ def main():
         if cond_found:
             break
         column2 = text_from_column2(results, img_np, text_condition2)
+        column3 = text_from_column3(results, img_np, text_condition3)
+        column4 = text_from_column4(results, img_np, text_condition4)
 
     f1.close()
     f2.close()
+    f3.close()
+    f4.close()
 
 
 if __name__ == "__main__":
