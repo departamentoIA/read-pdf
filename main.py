@@ -19,6 +19,7 @@ from pdf2image import convert_from_path
 import easyocr
 import numpy as np
 import cv2
+from typing import Tuple, List
 
 # Global variables-----------------------
 pdf_path = "./data/raw/18. 2024-38-90C-536.pdf"
@@ -46,6 +47,7 @@ def save_text_from_img(file, img: np.array) -> list:
         if data != '':
             file.write(data + "\n")
             column_list.append(data)
+    return column_list
 
 
 def display_img(window_name: str, img: np.array) -> None:
@@ -54,11 +56,11 @@ def display_img(window_name: str, img: np.array) -> None:
     cv2.destroyAllWindows()
 
 
-def plot_cropped_img(img_np: np.array, x1: int, y1: int, x2: int) -> np.array:
-    '''ssss'''
+def crop_img(img_np: np.array, x1: int, y1: int, x2: int) -> np.array:
+    '''Retrive an image and return the cropped image according to coordinates'''
     cropped = img_np[y1:, x1:x2]
     if cropped is None or cropped.size == 0:
-        print("ERROR: cropped image 2 empty.")
+        print("ERROR: cropped image empty.")
         return
     cropped = cv2.resize(cropped, None, fx=0.7, fy=0.7,
                          interpolation=cv2.INTER_LINEAR)
@@ -66,7 +68,7 @@ def plot_cropped_img(img_np: np.array, x1: int, y1: int, x2: int) -> np.array:
     return cropped
 
 
-def text_from_column1(results: list, img_np: np.array, text_condition1: str, text_condition2: str) -> bool:
+def text_from_column1(results: list, img_np: np.array, text_condition1: str, text_condition2: str) -> Tuple[bool, List[str]]:
     '''Obtain the coordinates of 2 bounding boxes of 2 text conditions.
     Display the cropped image and write in a file.'''
     boxes_found_1, boxes_found_2 = [], []
@@ -81,7 +83,7 @@ def text_from_column1(results: list, img_np: np.array, text_condition1: str, tex
 
     if (not boxes_found_1) or (not boxes_found_2):
         print(f"No text condition1 found in this page.")
-        return False
+        return True, []
 
     try:
         x1 = int(boxes_found_1[0][0][0]) - dx
@@ -90,14 +92,15 @@ def text_from_column1(results: list, img_np: np.array, text_condition1: str, tex
         if x1 < 0 or x2 <= x1:
             print("ERROR: invalid coordinates.")
             return
-        cropped = plot_cropped_img(img_np, x1, y1, x2)
-        column1 = save_text_from_img(cropped)
+        cropped = crop_img(img_np, x1, y1, x2)
+        column1_list = save_text_from_img(f1, cropped)
+        return False, column1_list
     except Exception as e:
         # print("ERROR en recorte: ", e)
         return
 
 
-def text_from_column2(results: list, img_np: np.array, text_condition2: str) -> None:
+def text_from_column2(results: list, img_np: np.array, text_condition2: str) -> list:
     '''Obtain the coordinates of 1 bounding box.
     Display the cropped image and write in a file.'''
     boxes_found_2 = []
@@ -114,12 +117,13 @@ def text_from_column2(results: list, img_np: np.array, text_condition2: str) -> 
     try:
         x1 = int(boxes_found_2[0][0][0])
         y1 = int(boxes_found_2[0][0][1])
-        x2 = int(boxes_found_2[0][1][0]) + 2*dx
+        x2 = int(boxes_found_2[0][1][0]) + 5*dx
         if x1 < 0 or x2 <= x1:
             print("ERROR: invalid coordinates for column 2.")
             return
-        cropped = plot_cropped_img(img_np, x1, y1, x2)
-        column2 = save_text_from_img(cropped)
+        cropped = crop_img(img_np, x1, y1, x2)
+        column2_list = save_text_from_img(f2, cropped)
+        return column2_list
     except Exception as e:
         # print("ERROR en recorte: ", e)
         return
@@ -127,7 +131,7 @@ def text_from_column2(results: list, img_np: np.array, text_condition2: str) -> 
 
 def main():
     '''Convert PDF to images and crop according to text conditions.'''
-    cond_found = True
+    cond_found = False
     # Convert PDF to images (for Windows)
     imagenes_pil = convert_from_path(
         pdf_path, dpi=300, poppler_path=r"C:\poppler\Library\bin")
@@ -143,12 +147,12 @@ def main():
         img_np = cv2.cvtColor(img_np, cv2.COLOR_RGB2BGR)
         results = reader.readtext(img_np)
         # results → [ [bbox, texto, prob], ... ]
-        cond_found = text_from_column1(
+        cond_found, column1 = text_from_column1(
             results, img_np, text_condition1, text_condition2)
         if cond_found:
             break
-        text_from_column2(results, img_np, text_condition2)
-        print(column1)
+        column2 = text_from_column2(results, img_np, text_condition2)
+
     f1.close()
     f2.close()
 
