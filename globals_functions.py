@@ -6,7 +6,7 @@ import cv2
 from typing import Tuple, List
 
 # Global variables-----------------------
-pdf_path = "./data/raw/18. 2024-38-90C-536.pdf"
+pdf_path = "./data/raw/3. 2024-38-91E-85.pdf"
 output_path1 = "./data/processed/text1.txt"
 output_path2 = "./data/processed/text2.txt"
 output_path3 = "./data/processed/text3.txt"
@@ -209,6 +209,3 @@ def read_pdf():
     f2.close()
     f3.close()
     f4.close()
-
-
-print("Hi, I am 'globals_functions.py'")
