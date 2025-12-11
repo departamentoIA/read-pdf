@@ -6,7 +6,7 @@ import cv2
 from typing import Tuple, List
 
 # Global variables-----------------------
-pdf_path = "./data/raw/3. 2024-38-91E-85.pdf"
+pdf_path = "./data/raw/18. 2024-38-90C-536.pdf"
 output_path1 = "./data/processed/text1.txt"
 output_path2 = "./data/processed/text2.txt"
 output_path3 = "./data/processed/text3.txt"
@@ -28,19 +28,14 @@ f4 = open(output_path4, "w", encoding="utf-8")
 reader = easyocr.Reader(['es', 'en'])
 
 
-def text_from_img_raw(file, img: np.array) -> None:
-    '''Save the text read in the image and return text.'''
-    results = reader.readtext(img)
-    for (bbox, text, prob) in results:
-        if text != '':
-            file.write(text + "\n")
-
-
-def save_text_from_img(file, img: np.array) -> None:
+def txt_from_img(file, img: np.array, raw=True) -> None:
     '''Save the text read in the image and return the cleaned text.'''
     results = reader.readtext(img)
     for (bbox, text, prob) in results:
-        data = ''.join([c for c in text if c.isdigit()])
+        if raw == False:
+            data = ''.join([c for c in text if c.isdigit()])
+        else:
+            data = text
         if data != '':
             file.write(data + "\n")
 
@@ -89,7 +84,7 @@ def text_from_column1(results: list, img_np: np.array, text_condition1: str, tex
             print("ERROR: invalid coordinates.")
             return
         cropped = crop_img(img_np, x1, y1, x2)
-        save_text_from_img(f1, cropped)
+        txt_from_img(f1, cropped, False)
         return False
     except Exception as e:
         # print("ERROR en recorte: ", e)
@@ -119,7 +114,7 @@ def text_from_column2(results: list, img_np: np.array, text_condition2: str) -> 
             print("ERROR: invalid coordinates for column 2.")
             return
         cropped = crop_img(img_np, x1, y1, x2)
-        save_text_from_img(f2, cropped)
+        txt_from_img(f2, cropped, False)
     except Exception as e:
         # print("ERROR en recorte: ", e)
         return
@@ -148,7 +143,7 @@ def text_from_column3(results: list, img_np: np.array, text_condition3: str) -> 
             print("ERROR: invalid coordinates for column 3.")
             return
         cropped = crop_img(img_np, x1, y1, x2)
-        text_from_img_raw(f3, cropped)
+        txt_from_img(f3, cropped, True)
     except Exception as e:
         # print("ERROR en recorte: ", e)
         return
@@ -177,7 +172,7 @@ def text_from_column4(results: list, img_np: np.array, text_condition4: str) -> 
             print("ERROR: invalid coordinates for column 4.")
             return
         cropped = crop_img(img_np, x1, y1, x2)
-        text_from_img_raw(f4, cropped)
+        txt_from_img(f4, cropped, True)
     except Exception as e:
         # print("ERROR en recorte: ", e)
         return
@@ -214,3 +209,6 @@ def read_pdf():
     f2.close()
     f3.close()
     f4.close()
+
+
+print("Hi, I am 'globals_functions.py'")
