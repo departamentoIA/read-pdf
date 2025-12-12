@@ -12,6 +12,7 @@ easyocr is used to obtain the coordinates of 2 bounding boxes of 2 text conditio
 finally, easyocr is used again to read text in the cropped image. This process is
 applied to 4 columns for all pages.
 Columns conent is saved in "output_path1", ..., "output_path4".
+Finally, all columns are cleaned and saved in an Excel file.
 Dependencies:   pdf2image==1.17.0, easyocr==1.7.2, pillow==12.0.0, numpy==2.2.6,
 poppler-25.07.0 installed.
 """

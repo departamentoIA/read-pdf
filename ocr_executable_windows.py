@@ -11,15 +11,15 @@ easyocr and tesseract models.
 Dependencies:   pdf2image==1.17.0, easyocr==1.7.2, pillow==12.0.0, numpy==2.2.6,
 poppler-25.07.0 and tesseractOCR installed.
 Instructions for portability:
-Copy the content of r'C:/poppler/Library' in the folder './poppler'.
-Copy content of (hidden folder) r'C:/Users/youruser/.EasyOCR/model' in './easyOCR'.
-Copy the content of r'C:/Program Files/Tesseract-OCR' in './tesseract'.
-To make this project executable, run (3 lines are 1 line):
-pyinstaller --onefile --add-data "./poppler/bin;poppler/bin"
---add-data "./easyOCR;easyOCR" --add-data "./tesseract;tesseract"
+1. Copy the content of r'C:/poppler/Library' in the folder './poppler'.
+2. Copy content of (hidden folder) r'C:/Users/youruser/.EasyOCR/model' in './easyOCR'.
+3. Copy the content of r'C:/Program Files/Tesseract-OCR' in './tesseract'.
+4. Run (3 lines are 1 line):
+pyinstaller --onefile --add-data "poppler/bin;poppler/bin" 
+--add-data "easyOCR;easyOCR" --add-data "tesseract;tesseract" --add-data "data;data"
 ocr_executable_windows.py
-Finally, paste folder './data' in the same path of your executable.exe created
-in './dist'
+Finally, paste folder './data', which contains the PDF file, in the same path
+of your executable.exe created in './dist'
 """
 
 import sys

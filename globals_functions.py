@@ -4,6 +4,8 @@ from pdf2image import convert_from_path
 import easyocr
 import numpy as np
 import cv2
+from pathlib import Path
+import sys
 
 if not os.path.exists("./data/processed"):
     os.makedirs("./data/processed")
@@ -26,8 +28,22 @@ f2 = open(output_path2, "w", encoding="utf-8")
 f3 = open(output_path3, "w", encoding="utf-8")
 f4 = open(output_path4, "w", encoding="utf-8")
 
+# Base path (normal script or .exe)
+if getattr(sys, 'frozen', False):
+    base_path = Path(sys._MEIPASS)
+else:
+    base_path = Path(__file__).resolve().parent
+
+# Poppler
+poppler_path = os.path.join(base_path, "poppler", "bin")
+
+# EasyOCR
+easyocr_model_path = os.path.join(base_path, "easyOCR")
+
 # Create OCR reader
-reader = easyocr.Reader(['es', 'en'])
+reader = easyocr.Reader(['es', 'en'],
+                        model_storage_directory=easyocr_model_path,
+                        download_enabled=False)
 
 
 def txt_from_img(file, img: np.array, raw=True) -> None:
@@ -178,10 +194,7 @@ def read_pdf():
     cond_found = False
     # Convert PDF to images (for Windows)
     imagenes_pil = convert_from_path(
-        pdf_path, dpi=300, poppler_path=r"C:\poppler\Library\bin")
-
-    # Convert PDF to images (for Linux)
-    # imagenes = convert_from_path(pdf_path, dpi=200)
+        pdf_path, dpi=300, poppler_path=poppler_path)
 
     # Process every page
     for i, img in enumerate(imagenes_pil, start=1):
