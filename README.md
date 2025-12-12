@@ -11,9 +11,15 @@ read-pdf/
 ├── env/                # Virtual enviroment
 └── requirements.txt
 └── data/               # Contains all source files (PDFs, etc.)
-└── easyOCR/            # Contains easyOCR models (not provided and used when executable)
-└── poppler/            # Contains poppler files (not provided and used when executable)
-└── tesseract/          # Contains tesseract models (not provided and used when executable)
+└── easyOCR/            # Contains easyOCR models (not provided and used for executable)
+    └── *.pth           # Models
+└── poppler/            # Contains poppler files (not provided and used for executable)
+    └── bin/            # Binary files
+    └── ...
+└── tesseract/          # Contains tesseract models (not provided and used for executable)
+    └── tessdata/
+    └── tesseract.exe
+    └── ...
 ```
 ## Details
 **globals_functions.py:** Contains all global variables and functions used in 'main.py'.
@@ -41,3 +47,9 @@ For Linux:
 python -m venv env && source env/bin/activate && pip install -r requirements.txt
 ```
 3. Run "main.py".
+
+## Make executable
+In order to make main.py executable, run this command:
+```
+pyinstaller --onefile --add-data "poppler/bin;poppler/bin" --add-data "easyOCR;easyOCR" --add-data "tesseract;tesseract" --add-data "data;data" ocr_executable_windows.py
+```
