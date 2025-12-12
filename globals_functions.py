@@ -1,12 +1,15 @@
 # globals_functions.py
+import os
 from pdf2image import convert_from_path
 import easyocr
 import numpy as np
 import cv2
-from typing import Tuple, List
+
+if not os.path.exists("./data/processed"):
+    os.makedirs("./data/processed")
 
 # Global variables-----------------------
-pdf_path = "./data/raw/3. 2024-38-91E-85.pdf"
+pdf_path = "./data/raw/9. 2024-38-91E-388.pdf"
 output_path1 = "./data/processed/text1.txt"
 output_path2 = "./data/processed/text2.txt"
 output_path3 = "./data/processed/text3.txt"
@@ -16,7 +19,6 @@ text_condition2 = 'TFE'
 text_condition3 = 'AMPLIACIÓN'
 text_condition4 = 'REDUCCIÓN'
 dx = 10
-
 # ---------------------------------------
 # Files to write some text
 f1 = open(output_path1, "w", encoding="utf-8")
@@ -71,11 +73,9 @@ def text_from_column1(results: list, img_np: np.array, text_condition1: str, tex
         if text.__contains__(text_condition2):
             print(f"Text condition1: {text} (confidence: {prob:.1f})")
             boxes_found_2.append(bbox)
-
     if (not boxes_found_1) or (not boxes_found_2):
         print(f"No text condition1 found in this page.")
         return True, []
-
     try:
         x1 = int(boxes_found_1[0][0][0]) - dx
         y1 = int(boxes_found_1[0][0][1])
@@ -101,11 +101,9 @@ def text_from_column2(results: list, img_np: np.array, text_condition2: str) -> 
         if text.__contains__(text_condition2):
             print(f"Text condition 2: {text} (confidence: {prob:.1f})")
             boxes_found_2.append(bbox)
-
     if not boxes_found_2:
         print(f"No text condition found in this page for column 2.")
         return
-
     try:
         x1 = int(boxes_found_2[0][0][0])
         y1 = int(boxes_found_2[0][0][1])
@@ -130,11 +128,9 @@ def text_from_column3(results: list, img_np: np.array, text_condition3: str) -> 
         if text.__contains__(text_condition3):
             print(f"Text condition 3: {text} (confidence: {prob:.1f})")
             boxes_found_3.append(bbox)
-
     if not boxes_found_3:
         print(f"No text condition found in this page for column 3.")
         return
-
     try:
         x1 = int(boxes_found_3[0][0][0])
         y1 = int(boxes_found_3[0][0][1])
@@ -159,11 +155,9 @@ def text_from_column4(results: list, img_np: np.array, text_condition4: str) -> 
         if text.__contains__(text_condition4):
             print(f"Text condition 4: {text} (confidence: {prob:.1f})")
             boxes_found_4.append(bbox)
-
     if not boxes_found_4:
         print(f"No text condition found in this page for column 4.")
         return
-
     try:
         x1 = int(boxes_found_4[0][0][0])
         y1 = int(boxes_found_4[0][0][1])
@@ -204,7 +198,6 @@ def read_pdf():
         text_from_column2(results, img_np, text_condition2)
         text_from_column3(results, img_np, text_condition3)
         text_from_column4(results, img_np, text_condition4)
-
     f1.close()
     f2.close()
     f3.close()

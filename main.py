@@ -16,7 +16,6 @@ Dependencies:   pdf2image==1.17.0, easyocr==1.7.2, pillow==12.0.0, numpy==2.2.6,
 poppler-25.07.0 installed.
 """
 
-import os
 import pandas as pd
 from globals_functions import *
 output_path_root = "./data/processed"
@@ -42,7 +41,6 @@ def str_to_float(col: list) -> list:
             clean_list.append(num)
         except:
             clean_list.append(None)
-
     return clean_list
 
 
