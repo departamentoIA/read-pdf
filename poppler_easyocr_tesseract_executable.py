@@ -28,25 +28,27 @@ import easyocr
 import numpy as np
 import pytesseract as tess
 from PIL import Image
+from pathlib import Path
 
 pdf_path = "./data/raw/3. 2024-38-91E-85.pdf"
 img_path = "./data/raw/example.png"
 
 # Base path (normal script or .exe)
 if getattr(sys, 'frozen', False):
-    BASE = sys._MEIPASS
+    base_path = Path(sys._MEIPASS)
 else:
-    BASE = os.path.dirname(os.path.abspath(__file__))
+    base_path = Path(__file__).resolve().parent
+
 
 # Poppler
-poppler_path = os.path.join(BASE, "poppler", "bin")
+poppler_path = os.path.join(base_path, "poppler", "bin")
 
 # Tesseract
 tess.pytesseract.tesseract_cmd = os.path.join(
-    BASE, "tesseract", "tesseract.exe")
+    base_path, "tesseract", "tesseract.exe")
 
 # EasyOCR
-easyocr_model_path = os.path.join(BASE, "easyOCR")
+easyocr_model_path = os.path.join(base_path, "easyOCR")
 
 
 # Create OCR reader
