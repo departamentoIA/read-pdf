@@ -10,6 +10,7 @@ read-pdf/
 ├── .gitignore
 ├── env/                # Virtual enviroment
 └── requirements.txt
+└── ocr_executable_windows.py   # Simple example of executability
 └── data/               # Contains all source files (PDFs, etc.)
         └── raw/        # Non-processed files
         └── ...
@@ -26,8 +27,7 @@ read-pdf/
 ## ✨ Details
 **globals_functions.py:** Contains all global variables and functions used in 'main.py'.
 
-**main.py:** Reads and processes PDF files. The PDF file contains flat text and tables, all pages will be converted to images. Text is obtained using the pdf2image (with poppler) to convert the pages to images,
-easyocr is used to obtain the coordinates of 2 bounding boxes of 2 text conditions, finally, easyocr is used again to read text in the cropped image. This process is applied to 4 columns for all pages. Columns conent is saved in "output_path1", ..., "output_path4". Finally, all columns are cleaned and saved in an Excel file.
+**main.py:** Reads and processes PDF files. The PDF file contains flat text and tables, all pages will be converted to images. Text is obtained using the pdf2image (with poppler) to convert the pages to images, easyocr is used to obtain the coordinates of 2 bounding boxes of 2 text conditions, easyocr is used again to read text in the cropped image. This process is applied to 4 columns for all pages. Columns conent is saved in "output_path1", ..., "output_path4". Finally, all columns are cleaned and saved in an Excel file.
 
 **ocr_executable_windows:** Simple example of converting to executable a script that uses poppler, easyocr and tesseract models. This script is not part of the rest of this repository.
 
