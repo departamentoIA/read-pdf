@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-File:           poppler_easyocr_tesseract_executable.py
+File:           ocr_executable_windows.py
 Author:         Antonio Arteaga
 Last Updated:   2025-11-19
 Version:        1.0
@@ -17,8 +17,9 @@ Copy the content of r'C:/Program Files/Tesseract-OCR' in './tesseract'.
 To make this project executable, run (3 lines are 1 line):
 pyinstaller --onefile --add-data "./poppler/bin;poppler/bin"
 --add-data "./easyOCR;easyOCR" --add-data "./tesseract;tesseract"
-poppler_easyocr_tesseract_executable.py
-Finally, cut r'./dist/poppler_easyocr_tesseract_executable.exe' in './'.
+ocr_executable_windows.py
+Finally, paste folder './data' in the same path of your executable.exe created
+in './dist'
 """
 
 import sys
