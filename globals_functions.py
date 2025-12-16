@@ -6,12 +6,13 @@ import numpy as np
 import cv2
 from pathlib import Path
 import sys
+import warnings
 
 if not os.path.exists("./data/processed"):
     os.makedirs("./data/processed")
 
 # Global variables-----------------------
-pdf_path = "./data/raw/9. 2024-38-91E-388.pdf"
+pdf_path = "./data/raw/18. 2024-38-90C-536.pdf"
 output_path1 = "./data/processed/text1.txt"
 output_path2 = "./data/processed/text2.txt"
 output_path3 = "./data/processed/text3.txt"
@@ -21,6 +22,7 @@ text_condition2 = 'TFE'
 text_condition3 = 'AMPLIACIÓN'
 text_condition4 = 'REDUCCIÓN'
 dx = 10
+IMG_SCALER = 0.5
 # ---------------------------------------
 # Files to write some text
 f1 = open(output_path1, "w", encoding="utf-8")
@@ -44,6 +46,9 @@ easyocr_model_path = os.path.join(base_path, "easyOCR")
 reader = easyocr.Reader(['es', 'en'],
                         model_storage_directory=easyocr_model_path,
                         download_enabled=False)
+
+# To ignore all warnings
+warnings.filterwarnings("ignore")
 
 
 def txt_from_img(file, img: np.array, raw=True) -> None:
@@ -70,9 +75,9 @@ def crop_img(img_np: np.array, x1: int, y1: int, x2: int) -> np.array:
     if cropped is None or cropped.size == 0:
         print("ERROR: cropped image empty.")
         return
-    cropped = cv2.resize(cropped, None, fx=0.7, fy=0.7,
+    cropped = cv2.resize(cropped, None, fx=IMG_SCALER, fy=IMG_SCALER,
                          interpolation=cv2.INTER_LINEAR)
-    display_img("Cropped Image", cropped)
+    # display_img("Cropped Image", cropped)
     return cropped
 
 

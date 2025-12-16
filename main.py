@@ -79,7 +79,8 @@ def process_cols() -> None:
     for file in file_list:
         columns[i] = read_txt_lines(os.path.join(output_path_root, file))
         i += 1
-    column1, column2, column3, column4 = columns[0], columns[1], columns[2], columns[3],
+    column1, column2 = columns[0], columns[1]
+    column3, column4 = columns[2], columns[3]
     column3 = delete_letters(column3)
     column3 = str_to_float(column3)
     column4 = delete_letters(column4)
@@ -93,6 +94,7 @@ def process_cols() -> None:
     if len(column2) - len(column1) > 0:
         print("OCR está fallando al leer la columna 'TFEC'")
         return
+    print(f"{len(column1)},{len(column2)},{len(column3)},{len(column4)}")
     df = pd.DataFrame(
         {
             'OG': column1, 'TFE': column2, 'AMP': column3, 'RED': column4
