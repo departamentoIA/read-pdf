@@ -12,7 +12,7 @@ if not os.path.exists("./data/processed"):
     os.makedirs("./data/processed")
 
 # Global variables-----------------------
-pdf_path = "./data/raw/18. 2024-38-90C-536.pdf"
+pdf_path = "./data/raw/9. 2024-38-91E-388.pdf"
 output_path1 = "./data/processed/text1.txt"
 output_path2 = "./data/processed/text2.txt"
 output_path3 = "./data/processed/text3.txt"
@@ -22,7 +22,8 @@ text_condition2 = 'TFE'
 text_condition3 = 'AMPLIACIÓN'
 text_condition4 = 'REDUCCIÓN'
 dx = 10
-IMG_SCALER = 0.5
+IMG_SCALER = 0.9
+kernel = np.ones((1, 1), np.uint8)
 # ---------------------------------------
 # Files to write some text
 f1 = open(output_path1, "w", encoding="utf-8")
@@ -69,6 +70,13 @@ def display_img(window_name: str, img: np.array) -> None:
     cv2.destroyAllWindows()
 
 
+def opencv_efect(img: np.array) -> np.array:
+    '''Artifitial vision efects'''
+    imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    imgEnroded = cv2.erode(imgGray, kernel, iterations=1)
+    return imgEnroded
+
+
 def crop_img(img_np: np.array, x1: int, y1: int, x2: int) -> np.array:
     '''Retrive an image and return the cropped image according to coordinates'''
     cropped = img_np[y1:, x1:x2]
@@ -77,7 +85,8 @@ def crop_img(img_np: np.array, x1: int, y1: int, x2: int) -> np.array:
         return
     cropped = cv2.resize(cropped, None, fx=IMG_SCALER, fy=IMG_SCALER,
                          interpolation=cv2.INTER_LINEAR)
-    # display_img("Cropped Image", cropped)
+    img_trans = opencv_efect(cropped)
+    display_img("Cropped Image", img_trans)
     return cropped
 
 
@@ -128,7 +137,7 @@ def text_from_column2(results: list, img_np: np.array, text_condition2: str) -> 
     try:
         x1 = int(boxes_found_2[0][0][0])
         y1 = int(boxes_found_2[0][0][1])
-        x2 = int(boxes_found_2[0][1][0]) + 5*dx
+        x2 = int(boxes_found_2[0][1][0]) + 2*dx
         if x1 < 0 or x2 <= x1:
             print("ERROR: invalid coordinates for column 2.")
             return

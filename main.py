@@ -91,8 +91,14 @@ def process_cols() -> None:
     drop_cols = len(column4) - len(column1)
     if drop_cols > 0:
         column4 = column4[:-drop_cols]
-    if len(column2) - len(column1) > 0:
+    if len(column2) != len(column1):
         print("OCR está fallando al leer la columna 'TFEC'")
+        return
+    if len(column3) != len(column1):
+        print("OCR está fallando al leer la columna 'AMPLIACIÓN'")
+        return
+    if len(column4) != len(column1):
+        print("OCR está fallando al leer la columna 'REDUCCIÓN'")
         return
     print(f"{len(column1)},{len(column2)},{len(column3)},{len(column4)}")
     df = pd.DataFrame(
