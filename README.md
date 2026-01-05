@@ -1,10 +1,9 @@
 # read-pdf
 Read a table from a PDF file by using easyocr python library.
 
-## Repository Structure
+## 🌎 Repository Structure
 ```
 read-pdf/
-│
 ├── main.py
 ├── globals_functions.py
 ├── .gitignore
@@ -29,7 +28,7 @@ read-pdf/
 
 **main.py:** Reads and processes PDF files. The PDF file contains flat text and tables, all pages will be converted to images. Text is obtained using the pdf2image (with poppler) to convert the pages to images, easyocr is used to obtain the coordinates of 2 bounding boxes of 2 text conditions, easyocr is used again to read text in the cropped image. This process is applied to 4 columns for all pages. Columns conent is saved in "output_path1", ..., "output_path4". Finally, all columns are cleaned and saved in an Excel file.
 
-**ocr_executable_windows:** Simple example of converting to executable a script that uses poppler, easyocr and tesseract models. This script is not part of the rest of this repository.
+**ocr_executable_windows:** Simple example of converting to executable a script that uses poppler, easyocr and tesseract models. This script is not part of the rest of the project.
 
 ## 🚀 How to run locally
 1. Clone this repository:
@@ -59,4 +58,4 @@ In order to make 'main.py' executable:
 ```
 pyinstaller --onefile --add-data "poppler/bin;poppler/bin" --add-data "easyOCR;easyOCR" --add-data "tesseract;tesseract" --add-data "data;data" ocr_executable_windows.py
 ```
-5. Paste/move folder './data', which contains the PDF files, in the same path of your executable.exe created in './dist'.
+5. Paste or move folder './data', which contains the PDF files, in the same path of your executable.exe created in './dist'.

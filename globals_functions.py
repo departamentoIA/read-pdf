@@ -12,7 +12,7 @@ if not os.path.exists("./data/processed"):
     os.makedirs("./data/processed")
 
 # Global variables-----------------------
-pdf_path = "./data/raw/9. 2024-38-91E-388.pdf"
+pdf_path = "./data/raw/32. 2024-38-91E-675.pdf"
 output_path1 = "./data/processed/text1.txt"
 output_path2 = "./data/processed/text2.txt"
 output_path3 = "./data/processed/text3.txt"
